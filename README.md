@@ -5,6 +5,25 @@ A guide showing how to train TensorFlow Lite object detection models and run the
    <img src="doc/BSR_demo.gif">
 </p>
 
+
+
+
+# Casey modifications
+
+A91  git clone https://github.com/caseywdunn/tensorflow_lite_pi.git
+   92  cd tensorflow_lite_pi/
+   93  ls -l
+   94  python3 -m venv tf-env
+   95  source tf-env/bin/activate
+   96  cat get_pi_requirements.sh 
+   97  bash get_pi_requirements.sh 
+   98  python3 TFLite_detection_webcam.py --modeldir=Sample_TFLite_model
+
+A
+A
+
+A
+
 ## Introduction
 TensorFlow Lite is an optimized framework for deploying lightweight deep learning models on resource-constrained edge devices. TensorFlow Lite models have faster inference time and require less processing power, so they can be used to obtain faster performance in realtime applications. This guide provides step-by-step instructions for how train a custom TensorFlow Object Detection model, convert it into an optimized format that can be used by TensorFlow Lite, and run it on Android phones or the Raspberry Pi.
 
