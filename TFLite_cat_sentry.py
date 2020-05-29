@@ -222,7 +222,7 @@ while True:
 
     if(cat):
         led.on()
-        sleep(2)
+        sleep(0.5)
         led.off()
         sleep(2)
 
