@@ -2,7 +2,7 @@
 #
 # Author: Evan Juras
 # Date: 10/27/19
-# Description: 
+# Description:
 # This program uses a TensorFlow Lite model to perform object detection on a live webcam
 # feed. It draws boxes and scores around the objects of interest in each frame from the
 # webcam. To improve FPS, the webcam object runs in a separate thread from the main program.
@@ -23,12 +23,8 @@ import time
 from threading import Thread
 import importlib.util
 
-from gpiozero import LED
+import RPi.GPIO as GPIO
 from time import sleep
-led = LED(17)
-
-
-
 
 
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
@@ -41,7 +37,7 @@ class VideoStream:
         ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         ret = self.stream.set(3,resolution[0])
         ret = self.stream.set(4,resolution[1])
-            
+
         # Read first frame from the stream
         (self.grabbed, self.frame) = self.stream.read()
 
@@ -98,6 +94,12 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 
+# Set up the hardware
+pin_output = 17
+GPIO.setup( pin_output, GPIO.OUT )
+GPIO.output( pin_output, GPIO.LOW )
+
+
 # Import TensorFlow libraries
 # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
 # If using Coral Edge TPU, import the load_delegate library
@@ -115,7 +117,7 @@ else:
 if use_TPU:
     # If user has specified the name of the .tflite file, use that name, otherwise use default 'edgetpu.tflite'
     if (GRAPH_NAME == 'detect.tflite'):
-        GRAPH_NAME = 'edgetpu.tflite'       
+        GRAPH_NAME = 'edgetpu.tflite'
 
 # Get path to current working directory
 CWD_PATH = os.getcwd()
@@ -206,7 +208,7 @@ while True:
             xmin = int(max(1,(boxes[i][1] * imW)))
             ymax = int(min(imH,(boxes[i][2] * imH)))
             xmax = int(min(imW,(boxes[i][3] * imW)))
-            
+
             cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
             # Draw label
@@ -221,9 +223,9 @@ while True:
                 cat = True
 
     if(cat):
-        led.on()
-        sleep(2)
-        led.off()
+        GPIO.output( pin_output, GPIO.HIGH )
+        sleep(0.75)
+        GPIO.output( pin_output, GPIO.LOW )
         sleep(2)
 
     # Draw framerate in corner of frame
