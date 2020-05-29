@@ -87,6 +87,9 @@ parser.add_argument('--edgetpu', help='Use Coral Edge TPU Accelerator to speed u
                     action='store_true')
 parser.add_argument('--grabs', help='Directory for framegrabs',
                     default=None)
+parser.add_argument('--consecutive', help='The number of consecutive frames an object needs to be in to trigger an event',
+                    default=3)
+
 
 args = parser.parse_args()
 
@@ -98,6 +101,7 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 grabs_dir = args.grabs
+consecutive = args.consecutive
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 logging.info('Cat detector started')
@@ -179,6 +183,12 @@ freq = cv2.getTickFrequency()
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 
+# A list of the sets of the most recent objects detected, where the last element
+# is the most recent
+recent_history = list()
+
+old_repeat_objects = set()
+
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
 
@@ -232,9 +242,28 @@ while True:
 
             detected_objects.add(object_name)
 
+    # Update running list of last consecutive frames
+    recent_history.append(detected_objects)
+    if len(recent_history) > consecutive:
+        recent_history.pop(0)
 
-    if ( len(detected_objects) > 0 ):
-        logging.info( 'Detected objects: %s', detected_objects )
+    # Identify objects that have been in all the recent frames
+    flat_list = [item for sublist in l for item in sublist]
+    object_n = {}
+    for items in flat_list:
+        object_n[items] = flat_list.count(items)
+    object_n = {key: value for (key, value) in object_n.items() if value >= consecutive }
+
+    repeat_objects = set( object_n.keys() )
+    object_change = False
+    if ( old_repeat_objects != repeat_objects ):
+        object_change = True
+    old_repeat_objects = repeat_objects
+    
+
+    # Store the framegrab when there is at least one object and the objects have changed
+    if ( (len(repeat_objects) > 0) and (object_change) ):
+        logging.info( 'Detected objects: %s', repeat_objects )
         # Write the frame to disk if requested
         if (grabs_dir is not None):
             now = datetime.now()
@@ -243,7 +272,7 @@ while True:
             logging.debug( 'Writing frame to %s', grab_path )
             cv2.imwrite( grab_path, frame )
 
-    if('cat' in detected_objects):
+    if( 'cat' in repeat_objects ):
         GPIO.output( pin_output, GPIO.HIGH )
         logging.info( 'Triggered alarm' )
         sleep(0.75)
