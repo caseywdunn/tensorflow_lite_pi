@@ -95,7 +95,7 @@ min_conf_threshold = float(args.threshold)
 resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
-grab_dir = args.grabs
+grabs_dir = args.grabs
 
 # Set up the hardware
 GPIO.setmode(GPIO.BOARD)
