@@ -268,7 +268,7 @@ while True:
         if (grabs_dir is not None):
             now = datetime.now()
             grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
-            grab_path = os.path.join( grabs_dir, grab_name )
+            grab_path = os.path.join( grabs_dir, grab_name ).abspath()
             logging.debug( 'Writing frame to %s', grab_path )
             cv2.imwrite( str(grab_path), frame )
 
