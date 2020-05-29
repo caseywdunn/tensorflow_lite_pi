@@ -83,6 +83,8 @@ parser.add_argument('--resolution', help='Desired webcam resolution in WxH. If t
                     default='1280x720')
 parser.add_argument('--edgetpu', help='Use Coral Edge TPU Accelerator to speed up detection',
                     action='store_true')
+parser.add_argument('--grabs', help='Directory for framegrabs',
+                    default=None)
 
 args = parser.parse_args()
 
@@ -93,6 +95,7 @@ min_conf_threshold = float(args.threshold)
 resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
+grab_dir = args.grabs
 
 # Set up the hardware
 GPIO.setmode(GPIO.BOARD)
@@ -234,6 +237,12 @@ while True:
 
     # All the results have been drawn on the frame, so it's time to display it.
     cv2.imshow('Object detector', frame)
+
+    # Write the frame to disk if requested
+    if grabs_dir is not None:
+        grab_name = "framegrab-{}.jpg".format( str(now.strftime("%Y%m%d_%H-%M-%S-%f")) )
+        grab_path = os.path.join( grabs_dir, grab_name )
+        cv2.imwrite( grab_path, frame )
 
     # Calculate framerate
     t2 = cv2.getTickCount()
