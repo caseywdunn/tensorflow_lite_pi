@@ -10,6 +10,12 @@ sudo apt-get -y install qt4-dev-tools libatlas-base-dev
 # Need to get an older version of OpenCV because version 4 has errors
 pip3 install opencv-python==3.4.6.27
 
+# Install packages needed for hardware interfacing etc
+# Though preinstalled on the pi, they are not available within the virtual environment
+# Note that this must not be installed with sudo
+pip3 install RPi.GPIO
+
+
 # Get packages required for TensorFlow
 # Using the tflite_runtime packages available at https://www.tensorflow.org/lite/guide/python
 # Will change to just 'pip3 install tensorflow' once newer versions of TF are added to piwheels
@@ -25,4 +31,3 @@ fi
 if [ $version == "3.5" ]; then
 pip3 install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp35-cp35m-linux_armv7l.whl
 fi
-
