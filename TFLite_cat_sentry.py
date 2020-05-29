@@ -20,7 +20,7 @@ import cv2
 import numpy as np
 import sys
 import time
-import datetime
+from datetime import datetime
 from threading import Thread
 import importlib.util
 
@@ -241,7 +241,8 @@ while True:
 
     # Write the frame to disk if requested
     if grabs_dir is not None:
-        grab_name = "framegrab-{}.jpg".format( str(datetime.datetime.now.strftime("%Y%m%d_%H-%M-%S-%f")) )
+        now = datetime.now()
+        grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
         grab_path = os.path.join( grabs_dir, grab_name )
         cv2.imwrite( grab_path, frame )
 
