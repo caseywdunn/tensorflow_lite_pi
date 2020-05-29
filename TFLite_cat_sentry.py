@@ -209,7 +209,7 @@ while True:
     #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
 
     # Loop over all detections and draw detection box if confidence is above minimum threshold
-    cat = False
+    detected_objects = set()
     for i in range(len(scores)):
         if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
 
@@ -230,11 +230,20 @@ while True:
             cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
             cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
-            logging.info( 'Detected a %s', object_name )
-            if( object_name == 'cat' ):
-                cat = True
+            detected_objects.add(object_name)
 
-    if(cat):
+
+    if ( len(detected_objects) > 0 ):
+        logging.info( 'Detected objects: {}', detected_objects )
+        # Write the frame to disk if requested
+        if (grabs_dir is not None):
+            now = datetime.now()
+            grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
+            grab_path = os.path.join( grabs_dir, grab_name )
+            logging.debug( 'Writing frame to %s', grab_path )
+            cv2.imwrite( grab_path, frame )
+
+    if('cat' in detected_objects):
         GPIO.output( pin_output, GPIO.HIGH )
         logging.info( 'Triggered alarm' )
         sleep(0.75)
@@ -247,13 +256,7 @@ while True:
     # All the results have been drawn on the frame, so it's time to display it.
     cv2.imshow('Object detector', frame)
 
-    # Write the frame to disk if requested
-    if grabs_dir is not None:
-        now = datetime.now()
-        grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
-        grab_path = os.path.join( grabs_dir, grab_name )
-        logging.debug( 'Wrighting frame to %s', grab_path )
-        cv2.imwrite( grab_path, frame )
+
 
     # Calculate framerate
     t2 = cv2.getTickCount()
