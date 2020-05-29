@@ -95,7 +95,8 @@ imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 
 # Set up the hardware
-pin_output = 17
+GPIO.setmode(GPIO.BOARD)
+pin_output = 11 # GPIO17
 GPIO.setup( pin_output, GPIO.OUT )
 GPIO.output( pin_output, GPIO.LOW )
 
