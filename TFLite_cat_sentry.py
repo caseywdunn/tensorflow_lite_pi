@@ -122,7 +122,7 @@ def write_frame( grabs_dir, frame ):
     now = datetime.now()
     grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
     grab_path = os.path.join( grabs_dir, grab_name )
-    grab_path = os.path.abspath( grab_path )
+    grab_path = os.path.expanduser( grab_path )
     logging.debug( 'Writing frame to %s', grab_path )
     cv2.imwrite( grab_path, frame )
 
