@@ -234,7 +234,7 @@ while True:
 
 
     if ( len(detected_objects) > 0 ):
-        logging.info( 'Detected objects: {}', detected_objects )
+        logging.info( 'Detected objects: %s', detected_objects )
         # Write the frame to disk if requested
         if (grabs_dir is not None):
             now = datetime.now()
