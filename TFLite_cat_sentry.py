@@ -23,6 +23,7 @@ import time
 from datetime import datetime
 from threading import Thread
 import importlib.util
+import logging
 
 import RPi.GPIO as GPIO
 from time import sleep
@@ -97,6 +98,11 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 grabs_dir = args.grabs
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.info('Cat detector started')
+
+
 
 # Set up the hardware
 GPIO.setmode(GPIO.BOARD)
@@ -224,11 +230,13 @@ while True:
             cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
             cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
+            logging.info( 'Detected a %s', object_name )
             if( object_name == 'cat' ):
                 cat = True
 
     if(cat):
         GPIO.output( pin_output, GPIO.HIGH )
+        logging.info( 'Triggered alarm' )
         sleep(0.75)
         GPIO.output( pin_output, GPIO.LOW )
         sleep(2)
@@ -244,6 +252,7 @@ while True:
         now = datetime.now()
         grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
         grab_path = os.path.join( grabs_dir, grab_name )
+        logging.debug( 'Wrighting frame to %s', grab_path )
         cv2.imwrite( grab_path, frame )
 
     # Calculate framerate
