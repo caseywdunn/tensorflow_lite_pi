@@ -71,6 +71,9 @@ class VideoStream:
 	# Indicate that the camera and thread should be stopped
         self.stopped = True
 
+
+
+
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
@@ -114,6 +117,14 @@ pin_output = 11 # GPIO17
 GPIO.setup( pin_output, GPIO.OUT )
 GPIO.output( pin_output, GPIO.LOW )
 
+
+def write_frame( grabs_dir, frame ):
+    now = datetime.now()
+    grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
+    grab_path = os.path.join( grabs_dir, grab_name )
+    grab_path = os.path.abspath( grab_path )
+    logging.debug( 'Writing frame to %s', grab_path )
+    cv2.imwrite( grab_path, frame )
 
 # Import TensorFlow libraries
 # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -188,6 +199,11 @@ time.sleep(1)
 recent_history = list()
 
 old_repeat_objects = set()
+
+
+# Store a frame of the scence
+frame = videostream.read()
+write_frame( grabs_dir, frame )
 
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
@@ -266,11 +282,7 @@ while True:
         logging.info( 'Detected objects: %s', repeat_objects )
         # Write the frame to disk if requested
         if (grabs_dir is not None):
-            now = datetime.now()
-            grab_name = "framegrab-{}.jpg".format( str( now.strftime("%Y%m%d_%H-%M-%S-%f")) )
-            grab_path = os.path.join( grabs_dir, grab_name ).abspath()
-            logging.debug( 'Writing frame to %s', grab_path )
-            cv2.imwrite( str(grab_path), frame )
+            write_frame( grabs_dir, frame )
 
     if( 'cat' in repeat_objects ):
         GPIO.output( pin_output, GPIO.HIGH )
