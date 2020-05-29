@@ -248,7 +248,7 @@ while True:
         recent_history.pop(0)
 
     # Identify objects that have been in all the recent frames
-    flat_list = [item for sublist in l for item in sublist]
+    flat_list = [item for sublist in recent_history for item in sublist]
     object_n = {}
     for items in flat_list:
         object_n[items] = flat_list.count(items)
@@ -259,7 +259,7 @@ while True:
     if ( old_repeat_objects != repeat_objects ):
         object_change = True
     old_repeat_objects = repeat_objects
-    
+
 
     # Store the framegrab when there is at least one object and the objects have changed
     if ( (len(repeat_objects) > 0) and (object_change) ):
