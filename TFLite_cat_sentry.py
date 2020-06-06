@@ -291,7 +291,7 @@ while True:
             write_frame( grabs_dir, frame )
 
     if( 'cat' in repeat_objects ):
-	if( is_time_between(time(22,00), time(07,30) ) ):
+	if( is_time_between(time(22,0), time(7,30) ) ):
 	  logging.info( 'Triggered alarm, but alarm is silenced' )
 	else:
           GPIO.output( pin_output, GPIO.HIGH )
