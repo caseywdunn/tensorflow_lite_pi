@@ -70,7 +70,13 @@ class VideoStream:
     def stop(self):
 	# Indicate that the camera and thread should be stopped
         self.stopped = True
-
+def is_time_between(begin_time, end_time, check_time=None):
+  # If check time is not given, default to current time
+  check_time = check_time or datetime.now().time()
+  if begin_time < end_time:
+    return check_time >= begin_time and check_time <= end_time
+  else: # crosses midnight
+    return check_time >= begin_time or check_time <= end_time
 
 
 
@@ -285,10 +291,14 @@ while True:
             write_frame( grabs_dir, frame )
 
     if( 'cat' in repeat_objects ):
-        GPIO.output( pin_output, GPIO.HIGH )
-        logging.info( 'Triggered alarm' )
-        sleep(0.75)
-        GPIO.output( pin_output, GPIO.LOW )
+	if( is_time_between(time(22,00), time(07,30) ) ):
+	  logging.info( 'Triggered alarm, but alarm is silenced' )
+	else:
+          GPIO.output( pin_output, GPIO.HIGH )
+          logging.info( 'Triggered alarm' )
+          sleep(0.75)
+          GPIO.output( pin_output, GPIO.LOW )
+		
         sleep(2)
 
     # Draw framerate in corner of frame
