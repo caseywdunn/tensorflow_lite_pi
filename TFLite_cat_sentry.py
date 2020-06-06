@@ -291,15 +291,15 @@ while True:
             write_frame( grabs_dir, frame )
 
     if( 'cat' in repeat_objects ):
-	if( is_time_between(time(22,0), time(7,30) ) ):
-	  logging.info( 'Triggered alarm, but alarm is silenced' )
-	else:
-          GPIO.output( pin_output, GPIO.HIGH )
-          logging.info( 'Triggered alarm' )
-          sleep(0.75)
-          GPIO.output( pin_output, GPIO.LOW )
+      if( is_time_between(time(22,0), time(7,30) ) ):
+        logging.info( 'Triggered alarm, but alarm is silenced' )
+      else:
+        GPIO.output( pin_output, GPIO.HIGH )
+        logging.info( 'Triggered alarm' )
+        sleep(0.75)
+        GPIO.output( pin_output, GPIO.LOW )
 		
-        sleep(2)
+      sleep(2)
 
     # Draw framerate in corner of frame
     cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
