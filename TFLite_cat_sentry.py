@@ -43,11 +43,11 @@ class VideoStream:
         # Read first frame from the stream
         (self.grabbed, self.frame) = self.stream.read()
 
-	# Variable to control when the camera is stopped
+    # Variable to control when the camera is stopped
         self.stopped = False
 
     def start(self):
-	# Start the thread that reads frames from the video stream
+    # Start the thread that reads frames from the video stream
         Thread(target=self.update,args=()).start()
         return self
 
@@ -64,19 +64,19 @@ class VideoStream:
             (self.grabbed, self.frame) = self.stream.read()
 
     def read(self):
-	# Return the most recent frame
+    # Return the most recent frame
         return self.frame
 
     def stop(self):
-	# Indicate that the camera and thread should be stopped
+    # Indicate that the camera and thread should be stopped
         self.stopped = True
 def is_time_between(begin_time, end_time, check_time=None):
-  # If check time is not given, default to current time
-  check_time = check_time or datetime.now().time()
-  if begin_time < end_time:
-    return check_time >= begin_time and check_time <= end_time
-  else: # crosses midnight
-    return check_time >= begin_time or check_time <= end_time
+    # If check time is not given, default to current time
+    check_time = check_time or datetime.now().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
 
 
 
@@ -291,15 +291,15 @@ while True:
             write_frame( grabs_dir, frame )
 
     if( 'cat' in repeat_objects ):
-      if( is_time_between(time(22,0), time(7,30) ) ):
-        logging.info( 'Triggered alarm, but alarm is silenced' )
-      else:
-        GPIO.output( pin_output, GPIO.HIGH )
-        logging.info( 'Triggered alarm' )
-        sleep(0.75)
-        GPIO.output( pin_output, GPIO.LOW )
-		
-      sleep(2)
+        if( is_time_between(time(22,0), time(7,30) ) ):
+            logging.info( 'Triggered alarm, but alarm is silenced' )
+        else:
+            GPIO.output( pin_output, GPIO.HIGH )
+            logging.info( 'Triggered alarm' )
+            sleep(0.75)
+            GPIO.output( pin_output, GPIO.LOW )
+
+    sleep(2)
 
     # Draw framerate in corner of frame
     cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
